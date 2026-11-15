@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animated Galaxy</title>
+
+<style>
+:root {
+    --purple: #a855ff;
+    --violet: #7c3aed;
+    --lilac: #c9b9ff;
+    --yellow: #ffe14d;
+    --pink: #ff5d8f;
+    --display: Impact, "Arial Black", sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+[hidden] { display: none !important; }
+
+body {
+    background: #02010d;
+    font-family: Arial, sans-serif;
+    color: #fff;
+}
+
+/* ---------- Background ---------- */
+.galaxy, #sky {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+
+.galaxy {
+    background:
+        radial-gradient(ellipse at 20% 30%, rgba(100, 0, 180, 0.4), transparent 40%),
+        radial-gradient(ellipse at 80% 70%, rgba(0, 80, 180, 0.35), transparent 45%),
+        radial-gradient(ellipse at 50% 50%, #100525, #02010d 80%);
+    animation: universe 12s ease-in-out infinite alternate;
+    will-change: transform, filter;
+}
+
+#sky { width: 100%; height: 100%; }
+
+@keyframes universe {
+    from { transform: scale(1);   filter: hue-rotate(0deg); }
+    to   { transform: scale(1.2); filter: hue-rotate(40deg); }
+}
+
+/* ---------- Cover ---------- */
+.cover {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 8vh 20px 40px;
+    overflow-x: hidden;
+    overflow-x: clip; /* fallback for browsers without "clip" */
+}
+
+.cover h1 {
+    font-size: clamp(30px, 6vw, 65px);
+    letter-spacing: 5px;
+    text-shadow: 0 0 20px var(--purple), 0 0 40px #6825ff;
+}
+
+.cover > p {
+    margin-top: 20px;
+    color: var(--lilac);
+    letter-spacing: 3px;
+}
+
+.scroll-down {
+    margin-top: auto;
+    padding-top: 50px;
+    color: var(--lilac);
+    letter-spacing: 3px;
+    font-size: 14px;
+    animation: bounce 1.6s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(12px); }
+}
+
+.row {
+    margin-top: 6vh;
+    width: 100%;
+    padding: 0 4vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.info-container {
+    flex: 0 1 560px;
+    display: grid;
+    gap: 18px;
+    text-align: left;
+}
+
+.info-card {
+    padding: 14px 18px;
+    border-left: 3px solid var(--purple);
+    background: rgba(16, 5, 37, 0.55);
+}
+
+.info-card h3 {
+    font-size: 15px;
+    font-weight: normal;
+    letter-spacing: 3px;
+    color: #a78bfa;
+}
+
+.info-card p,
+.info-card ul { margin-top: 6px; }
+.info-card p  { letter-spacing: 0.5px; line-height: 1.6; }
+.info-card ul { list-style: none; line-height: 1.8; }
+
+.moon-zone {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.moon {
+    --d: min(640px, 80vw);
+    display: block;
+    flex: none;
+    width: var(--d);
+    height: auto;
+    aspect-ratio: 1;
+    margin-right: calc(-1 * (20px + 4vw + var(--d) / 2));
+    filter: drop-shadow(0 0 40px rgba(190, 170, 255, 0.28));
+}
+
+@media (max-width: 800px) {
+    .row { flex-direction: column; gap: 36px; }
+    .info-container { flex: none; width: 100%; }
+    .moon { --d: min(420px, 90vw); }
+}
+
+/* ---------- Comic ---------- */
+.comic {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+    opacity: 0;
+    transform: translateY(80px) rotate(-1.5deg);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.comic.visible { opacity: 1; transform: none; }
+
+.screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    width: 100%;
+    text-align: center;
+}
+
+.comic-title {
+    font-family: var(--display);
+    font-size: clamp(38px, 9vw, 80px);
+    letter-spacing: 4px;
+    color: var(--yellow);
+    text-shadow: 4px 4px 0 #000, 0 0 30px rgba(255, 225, 77, 0.45);
+    transform: rotate(-2deg);
+}
+
+.comic-sub { color: var(--lilac); letter-spacing: 2px; }
+
+.btn {
+    font-family: var(--display);
+    font-size: clamp(15px, 3.5vw, 20px);
+    letter-spacing: 2px;
+    padding: 12px 22px;
+    background: var(--yellow);
+    color: #000;
+    border: 4px solid #000;
+    box-shadow: 5px 5px 0 var(--violet);
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--violet);
+}
+
+.btn:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow: 1px 1px 0 var(--violet);
+}
+
+.btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn.large { font-size: clamp(22px, 5vw, 32px); padding: 16px 40px; }
+.btn.back { background: var(--pink); }
+
+.page {
+    display: none;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 2 / 3;
+    width: min(92vw, calc(66vh * 2 / 3));
+    background: #fff;
+    border: 6px solid #000;
+    box-shadow: 10px 10px 0 var(--violet);
+    overflow: hidden;
+}
+
+.page.active { display: flex; animation: turn-page 0.45s ease; }
+
+@keyframes turn-page {
+    from { opacity: 0; transform: translateX(40px) rotate(1deg); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* Placeholder: only visible when the page image is missing */
+.ph {
+    flex: 1;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 18px;
+    padding: 20px;
+    border: 3px dashed #999;
+    font-family: var(--display);
+    font-size: clamp(22px, 5vw, 34px);
+    letter-spacing: 2px;
+    color: #555;
+    text-align: center;
+}
+
+.ph small {
+    margin-top: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    letter-spacing: 0;
+}
+
+.page img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #fff;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+#narrationAudio { width: min(92vw, 420px); margin: 2px auto 0; }
+
+.counter {
+    min-width: 70px;
+    font-family: var(--display);
+    letter-spacing: 3px;
+    color: var(--yellow);
+    text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="galaxy" aria-hidden="true"></div>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<section class="cover" id="start">
+    <h1>Abandoned but not forgotten</h1>
+    <p>Nova Mind-NASA Space App</p>
+
+    <div class="row">
+        <div class="info-container">
+            <div class="info-card">
+                <h3>Team Members</h3>
+                <ul>
+                    <li>Jolette Sánchez Reyes</li>
+                    <li>Rickardo Daniel Sotelo Franco</li>
+                    <li>Andres Gaytan Ramrez</li>
+                    <li>Aaron Isael Delgado Antonio</li>
+                    <li>Zabdy Huicochea Vázquez</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h3>Topic Summary</h3>
+                <p>Abandoned yet Unforgotten: Stories of Apollo 11 on the Moon
+
+In July 1969, humanity stepped onto the Moon for the first time, yet the journey did not end when the astronauts returned to Earth. In the silence of the Sea of Tranquility, a true space museum was left behind: scientific instruments such as seismometers and laser retroreflectors, messages of peace from seventy-three nations, and even the everyday tools that Neil Armstrong and Buzz Aldrin left behind to lighten their return vessel.
+
+This thirteen-page digital comic transforms NASA's historical archives into a visual adventure designed for all audiences. Explore, page by page, the history behind these machines and silent mementos that still remain intact upon the lunar surface, demonstrating that although they were left behind in space, their scientific and human legacy remains more vibrant than ever.</p>
+            </div>
+        </div>
+
+        <div class="moon-zone">
+            <canvas class="moon" id="moon" width="600" height="600" role="img" aria-label="Rotating moon on its axis"></canvas>
+        </div>
+    </div>
+
+    <div class="scroll-down">SCROLL DOWN ↓</div>
+</section>
+
+<section class="comic" id="comic">
+    <div class="screen" id="startScreen">
+        <h2 class="comic-title">The Comic!</h2>
+        <p class="comic-sub">Click start to read the story</p>
+        <button class="btn large" id="btnStart">START</button>
+    </div>
+
+    <div class="screen" id="reader" hidden>
+        <!-- Pages are generated by the script (see TOTAL_PAGES) -->
+        <audio id="narrationAudio" controls preload="none" aria-label="Page narration"></audio>
+
+        <div class="controls">
+            <button class="btn" id="btnPrev">◀ PREVIOUS PAGE</button>
+            <span class="counter" id="counter">1 / 1</span>
+            <button class="btn" id="btnNext">NEXT PAGE ▶</button>
+            <button class="btn back" id="btnBack" hidden>⟲ BACK TO TOP</button>
+        </div>
+    </div>
+</section>
+
+<script>
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* =====================================================================
+   Comic reader
+   Expects imagenes/page_N.png and audios/page_N.mp3 (or .mpeg)
+   ===================================================================== */
+(() => {
+    const TOTAL_PAGES = 13;
+    const AUDIO_EXTS = ['mp3', 'mpeg'];   // tried in order
+    const FIRST_NARRATED_PAGE = 2;        // pages before this one have no audio
+
+    const $ = (id) => document.getElementById(id);
+    const comic = $('comic'), startScreen = $('startScreen'), reader = $('reader');
+    const btnPrev = $('btnPrev'), btnNext = $('btnNext'), btnBack = $('btnBack');
+    const counter = $('counter'), audio = $('narrationAudio');
+
+    reader.insertAdjacentHTML('afterbegin', Array.from({ length: TOTAL_PAGES }, (_, i) => `
+        <div class="page">
+            <span class="ph">PAGE ${i + 1}<small>Add your image here</small></span>
+            <img src="imagenes/page_${i + 1}.png" alt="Page ${i + 1}" loading="lazy" decoding="async">
+        </div>`).join(''));
+
+    const pages = [...reader.querySelectorAll('.page')];
+    let current = 0, audioTry = 0;
+
+    // A missing image reveals the placeholder underneath (error doesn't bubble: use capture)
+    reader.addEventListener('error', (e) => {
+        if (e.target.tagName === 'IMG') e.target.hidden = true;
+    }, true);
+
+    function playNarration() {
+        audio.src = `audios/page_${current + 1}.${AUDIO_EXTS[audioTry]}`;
+        audio.play().catch(() => {});
+    }
+
+    audio.addEventListener('error', () => {
+        if (!audio.hidden && ++audioTry < AUDIO_EXTS.length) playNarration();
+    });
+
+    function stopNarration() {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+
+    function showPage(n) {
+        current = n;
+        audioTry = 0;
+        pages.forEach((p, i) => p.classList.toggle('active', i === n));
+        counter.textContent = `${n + 1} / ${pages.length}`;
+
+        const narrated = n + 1 >= FIRST_NARRATED_PAGE;
+        audio.hidden = !narrated;
+        if (narrated) playNarration(); else stopNarration();
+
+        const isLast = n === pages.length - 1;
+        btnPrev.disabled = n === 0;
+        btnNext.hidden = isLast;
+        btnBack.hidden = !isLast;
+
+        // Warm the cache for the next page
+        if (!isLast) new Image().src = pages[n + 1].querySelector('img').src;
+    }
+
+    const go = (delta) => {
+        const n = current + delta;
+        if (n >= 0 && n < pages.length) showPage(n);
+    };
+
+    $('btnStart').addEventListener('click', () => {
+        startScreen.hidden = true;
+        reader.hidden = false;
+        showPage(0);
+    });
+
+    btnNext.addEventListener('click', () => go(1));
+    btnPrev.addEventListener('click', () => go(-1));
+
+    btnBack.addEventListener('click', () => {
+        stopNarration();
+        scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            reader.hidden = true;
+            startScreen.hidden = false;
+        }, 700);
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (reader.hidden) return;
+        if (e.key === 'ArrowRight') go(1);
+        else if (e.key === 'ArrowLeft') go(-1);
+    });
+
+    // Reveal the comic section once, then stop observing
+    const revealObserver = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        comic.classList.add('visible');
+        revealObserver.disconnect();
+    }, { threshold: 0.2 });
+    revealObserver.observe(comic);
+})();
+
+/* =====================================================================
+   Starfield + meteors
+   ===================================================================== */
+(() => {
+    const canvas = document.getElementById('sky');
+    const ctx = canvas.getContext('2d');
+    let w = 0, h = 0, stars = [], meteors = [], nextMeteor = 0, lastTime = 0;
+
+    // Wrap a coordinate around the screen edges (with a 10px margin)
+    const wrap = (v, max) => (v < -10 ? max + 10 : v > max + 10 ? -10 : v);
+
+    function createStars() {
+        const count = Math.min(140, Math.floor(w * h / 12000));
+        stars = Array.from({ length: count }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.25,
+            vy: (Math.random() - 0.5) * 0.25,
+            r: Math.random() * 1.4 + 0.5,
+            phase: Math.random() * Math.PI * 2
+        }));
+    }
+
+    function resize() {
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        const widthChanged = innerWidth !== w;   // ignore height-only changes (mobile URL bar)
+        w = innerWidth;
+        h = innerHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (widthChanged || !stars.length) createStars();
+        if (reduceMotion) draw(0);
+    }
+
+    function newMeteor() {
+        const angle = (Math.random() * 15 + 30) * Math.PI / 180;
+        const fromTop = Math.random() < 0.7;
+        meteors.push({
+            x: fromTop ? Math.random() * (w + 300) : w + 40,
+            y: fromTop ? -40 : Math.random() * h * 0.5,
+            dx: -Math.cos(angle),                 // unit direction
+            dy: Math.sin(angle),
+            speed: Math.random() * 6 + 9,
+            length: Math.random() * 80 + 90,
+            thickness: Math.random() + 1
+        });
+    }
+
+    function drawMeteor(m) {
+        const tailX = m.x - m.dx * m.length;
+        const tailY = m.y - m.dy * m.length;
+        const gradient = ctx.createLinearGradient(tailX, tailY, m.x, m.y);
+        gradient.addColorStop(0, 'rgba(255,255,255,0)');
+        gradient.addColorStop(1, 'rgba(255,255,255,0.95)');
+
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = m.thickness;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(m.x, m.y);
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.thickness + 0.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function draw(t) {
+        const dt = Math.min((t - lastTime) / 16.67, 3);   // frame-rate independent
+        lastTime = t;
+        ctx.clearRect(0, 0, w, h);
+
+        ctx.fillStyle = '#fff';
+        for (const s of stars) {
+            if (!reduceMotion) {
+                s.x = wrap(s.x + s.vx * dt, w);
+                s.y = wrap(s.y + s.vy * dt, h);
+            }
+            ctx.globalAlpha = 0.65 + 0.35 * Math.sin(t * 0.002 + s.phase);
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        if (reduceMotion) return;
+
+        if (t > nextMeteor && meteors.length < 12) {
+            newMeteor();
+            nextMeteor = t + Math.random() * 700 + 250;
+        }
+        for (let i = meteors.length - 1; i >= 0; i--) {
+            const m = meteors[i];
+            m.x += m.dx * m.speed * dt;
+            m.y += m.dy * m.speed * dt;
+            drawMeteor(m);
+            if (m.y > h + 100 || m.x < -m.length - 100) meteors.splice(i, 1);
+        }
+        requestAnimationFrame(draw);
+    }
+
+    addEventListener('resize', resize);
+    resize();
+    if (!reduceMotion) requestAnimationFrame(draw);
+})();
+
+/* =====================================================================
+   Procedural rotating moon (software-rendered sphere)
+   ===================================================================== */
+(() => {
+    const canvas = document.getElementById('moon');
+    const ctx = canvas.getContext('2d');
+    const S = canvas.width;              // canvas size (px)
+    const TW = 1024, TH = 512;           // equirectangular texture size
+    const REVOLUTION = 60000;            // ms per full rotation
+    const FRAME_MS = 30;                 // frame limiter (~33 fps)
+    const K = 0.9;                       // bump-map strength
+    const D = Math.PI / 180, TAU = Math.PI * 2;
+
+    // Seeded PRNG (mulberry32) so the moon looks the same on every load
+    let seed = 23;
+    const rnd = () => {
+        seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+        let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+    const smooth = (a, b, x) => {
+        x = Math.min(1, Math.max(0, (x - a) / (b - a)));
+        return x * x * (3 - 2 * x);
+    };
+
+    // Fractal value noise, tileable horizontally
+    function fbm(octaves) {
+        const out = new Float32Array(TW * TH);
+        let amp = 1, total = 0;
+        for (let o = 0; o < octaves; o++) {
+            const gx = 4 << o, gy = 2 << o;
+            const grid = new Float32Array(gx * (gy + 1));
+            for (let i = 0; i < grid.length; i++) grid[i] = rnd();
+            for (let y = 0; y < TH; y++) {
+                const fy = y / TH * gy, y0 = fy | 0, ty = fy - y0, sy = ty * ty * (3 - 2 * ty);
+                for (let x = 0; x < TW; x++) {
+                    const fx = x / TW * gx, x0 = fx | 0, tx = fx - x0, sx = tx * tx * (3 - 2 * tx), x1 = (x0 + 1) % gx;
+                    const a = grid[y0 * gx + x0], b = grid[y0 * gx + x1];
+                    const c = grid[(y0 + 1) * gx + x0], d = grid[(y0 + 1) * gx + x1];
+                    out[y * TW + x] += amp * ((a + (b - a) * sx) * (1 - sy) + (c + (d - c) * sx) * sy);
+                }
+            }
+            total += amp;
+            amp *= 0.5;
+        }
+        for (let i = 0; i < out.length; i++) out[i] /= total;
+        return out;
+    }
+
+    function init() {
+        /* --- 1. Albedo and height maps: terrain + maria --- */
+        const detail = fbm(7), regions = fbm(4);
+        const alb = new Float32Array(TW * TH), hgt = new Float32Array(TW * TH);
+        for (let i = 0; i < alb.length; i++) {
+            const bias = 0.09 * Math.cos((i % TW) / TW * TAU - 1.2);   // dark seas cluster on one hemisphere
+            const maria = smooth(0.50, 0.58, regions[i] + bias + (detail[i] - 0.5) * 0.08);
+            alb[i] = (0.60 + (detail[i] - 0.5) * 0.55) * (1 - 0.45 * maria);
+            hgt[i] = (detail[i] - 0.5) * 0.12 - maria * 0.01;
+        }
+
+        /* --- 2. Impact features: 5 large dark basins, 4 rayed craters, then ordinary craters --- */
+        for (let c = 0; c < 240; c++) {
+            const basin = c < 5, rays = c >= 5 && c < 9;
+            const r = (basin ? 10 + rnd() * 9 : rays ? 2.5 + rnd() * 2 : Math.min(16, 0.8 / Math.pow(1 - rnd(), 0.72))) * D;
+            const lat0 = Math.asin((2 * rnd() - 1) * (basin ? 0.6 : 1));
+            const lon0 = basin ? 1.2 + (rnd() - 0.5) * 1.8 : rnd() * TAU, phase = rnd() * 6.28;
+            const rr = r * (basin ? 1.3 : rays ? 7 : 1.8);   // influence radius
+            const sl0 = Math.sin(lat0), cl0 = Math.cos(lat0);
+            const yc = Math.floor((0.5 - lat0 / Math.PI) * TH), xc = Math.floor(lon0 / TAU * TW);
+            const rows = Math.ceil(rr / Math.PI * TH) + 1;
+
+            for (let y = Math.max(0, yc - rows); y <= Math.min(TH - 1, yc + rows); y++) {
+                const lat = (0.5 - (y + 0.5) / TH) * Math.PI, sl = Math.sin(lat), cl = Math.cos(lat);
+                const span = Math.min(TW / 2, Math.ceil(rr / TAU * TW / Math.max(0.12, Math.min(cl, cl0))) + 1);
+
+                for (let dx = -span; dx <= span; dx++) {
+                    const xi = (((xc + dx) % TW) + TW) % TW;
+                    const dl = (xi + 0.5) / TW * TAU - lon0;
+                    const cd = sl * sl0 + cl * cl0 * Math.cos(dl);
+                    if (cd < Math.cos(rr)) continue;
+
+                    const t = Math.acos(Math.min(1, cd)) / r, i = y * TW + xi;
+                    if (basin) {                                      // smooth dark sea, shallow depression
+                        alb[i] -= 0.20 * (1 - smooth(0.55, 1.05, t));
+                        hgt[i] -= 0.03 * Math.max(0, 1 - t * t);
+                        continue;
+                    }
+                    if (t < 1) { hgt[i] -= 0.22 * r * (1 - t * t); alb[i] -= 0.05 * (1 - t * t); }   // bowl
+                    const edge = Math.exp(-(((t - 1) / 0.15) ** 2));
+                    hgt[i] += 0.08 * r * edge;                                                       // rim
+                    alb[i] += 0.10 * edge;
+                    if (t >= 1) {                                                                    // ejecta
+                        const ej = Math.exp(-(t - 1) * 2.2);
+                        hgt[i] += 0.03 * r * ej;
+                        alb[i] += 0.07 * ej;
+                    }
+                    if (rays && t > 1.05) {                                                          // rays
+                        const b = Math.atan2(Math.sin(dl) * cl, cl0 * sl - sl0 * cl * Math.cos(dl));
+                        const ray = Math.pow(Math.max(0, Math.sin(b * 9 + phase)), 8);
+                        alb[i] += 0.3 * ray * Math.exp(-(t - 1) / 3.2) * Math.min(1, (t - 1.05) * 4);
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < alb.length; i++) alb[i] = Math.min(1, Math.max(0.02, alb[i]));
+
+        /* --- 3. Height gradients (east / north) for bump lighting --- */
+        const gradE = new Float32Array(TW * TH), gradN = new Float32Array(TW * TH);
+        for (let y = 0; y < TH; y++) {
+            const lat = (0.5 - (y + 0.5) / TH) * Math.PI;
+            const dE = 2 * (TAU / TW) * Math.max(0.15, Math.cos(lat)), dN = 2 * (Math.PI / TH);
+            const ym = Math.max(0, y - 1), yp = Math.min(TH - 1, y + 1);
+            for (let x = 0; x < TW; x++) {
+                const xm = (x - 1 + TW) % TW, xp = (x + 1) % TW, i = y * TW + x;
+                gradE[i] = (hgt[y * TW + xp] - hgt[y * TW + xm]) / dE;
+                gradN[i] = (hgt[ym * TW + x] - hgt[yp * TW + x]) / dN;
+            }
+        }
+
+        /* --- 4. Per-pixel sphere projection (static; only the rotation changes) --- */
+        const tilt = 8 * D, ct = Math.cos(tilt), st = Math.sin(tilt);
+        let Lx = -0.60, Ly = 0.30, Lz = 0.75;                      // light direction
+        const Ln = Math.hypot(Lx, Ly, Lz); Lx /= Ln; Ly /= Ln; Lz /= Ln;
+
+        const n = S * S;
+        const pix = new Int32Array(n), u0 = new Float32Array(n), rowOff = new Int32Array(n);
+        const dotE = new Float32Array(n), dotN = new Float32Array(n), dotL = new Float32Array(n);
+        const alpha = new Uint8Array(n), limb = new Float32Array(n);
+        let count = 0;
+
+        for (let j = 0; j < S; j++) {
+            for (let i = 0; i < S; i++) {
+                const x = (i + 0.5 - S / 2) / (S / 2), y = -(j + 0.5 - S / 2) / (S / 2), r2 = x * x + y * y;
+                if (r2 >= 1) continue;
+                const z = Math.sqrt(1 - r2);
+                const ym = y * ct + z * st, zm = -y * st + z * ct;
+                const lat = Math.asin(ym), lon = Math.atan2(x, zm);
+                const sl = Math.sin(lon), cl = Math.cos(lon), sp = ym, cp = Math.sqrt(Math.max(0, 1 - ym * ym));
+                const ex = cl, ey = sl * st, ez = -sl * ct;                       // east vector
+                const nx = -sp * sl, ny = cp * ct + sp * cl * st, nz = cp * st - sp * cl * ct;   // north vector
+
+                pix[count] = j * S + i;
+                u0[count] = lon / TAU * TW;
+                rowOff[count] = Math.min(TH - 1, Math.max(0, Math.floor((0.5 - lat / Math.PI) * TH))) * TW;
+                dotE[count] = ex * Lx + ey * Ly + ez * Lz;
+                dotN[count] = nx * Lx + ny * Ly + nz * Lz;
+                dotL[count] = x * Lx + y * Ly + z * Lz;
+                alpha[count] = Math.min(1, (1 - Math.sqrt(r2)) * S * 0.5) * 255;   // anti-aliased edge
+                limb[count] = 0.72 + 0.28 * z;                                       // subtle edge falloff for depth
+                count++;
+            }
+        }
+
+        /* --- 5. Render --- */
+        const img = ctx.createImageData(S, S);
+        const px = new Uint32Array(img.data.buffer);   // one 32-bit write per pixel (little-endian ABGR)
+
+        function render(t) {
+            const rot = (t % REVOLUTION) / REVOLUTION * TW;
+            for (let k = 0; k < count; k++) {
+                let u = u0[k] - rot;
+                u -= TW * Math.floor(u / TW);
+                if (u >= TW) u -= TW;
+                const i0 = u | 0, f = u - i0, g = 1 - f, i1 = i0 + 1 === TW ? 0 : i0 + 1, o = rowOff[k];
+
+                const a  = alb[o + i0] * g + alb[o + i1] * f;
+                const ge = gradE[o + i0] * g + gradE[o + i1] * f;
+                const gn = gradN[o + i0] * g + gradN[o + i1] * f;
+
+                let l = dotL[k] - K * (ge * dotE[k] + gn * dotN[k]);
+                l = l < 0 ? 0 : (l > 1 ? 1 : l);
+
+                const v = a * (0.10 + l * (1.25 - 0.35 * l)) * limb[k] * 1.35 * 255;
+                const r = v > 255 ? 255 : v;
+                const gr = Math.min(255, v * 0.985);
+                const b = Math.min(255, v * 0.955);
+                px[pix[k]] = (alpha[k] << 24) | (b << 16) | (gr << 8) | r;
+            }
+            ctx.putImageData(img, 0, 0);
+        }
+
+        if (reduceMotion) { render(0); return; }
+
+        // Animate only while the moon is on screen
+        let raf = 0, last = -Infinity;
+        const loop = (t) => {
+            if (t - last >= FRAME_MS) { last = t; render(t); }
+            raf = requestAnimationFrame(loop);
+        };
+        new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) { if (!raf) raf = requestAnimationFrame(loop); }
+            else { cancelAnimationFrame(raf); raf = 0; }
+        }).observe(canvas);
+    }
+
+    // Defer the heavy texture generation so the cover text paints first
+    requestAnimationFrame(() => setTimeout(init));
+})();
+</script>
+
+</body>
+</html>
